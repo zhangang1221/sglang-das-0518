@@ -275,6 +275,30 @@ class TestDraftFactoryStamping(CustomTestCase):
             product.attn_backends[0].decode_attention_backend_str, "triton"
         )
 
+    def test_hcu_mla_decode_constructor_returns_a_stamped_pair(self):
+        from types import SimpleNamespace
+        from unittest import mock
+
+        factory = self._factory(draft_backend="hcu_mla")
+        backend = SimpleNamespace(attn_backends=[])
+        with mock.patch(
+            "sglang.srt.layers.attention.hcu_mla_backend.HCUMLAMultiStepDraftBackend",
+            return_value=backend,
+        ):
+            stamp, product = factory._create_hcumla_decode_backend()
+
+        self.assertEqual(stamp, "hcu_mla")
+        self.assertIs(product, backend)
+
+    def test_hcu_mla_draft_extend_constructor_returns_a_stamped_pair(self):
+        factory = self._factory(draft_backend="hcu_mla")
+
+        with self.assertLogs(level="WARNING"):
+            stamp, product = factory._create_hcumla_prefill_backend()
+
+        self.assertEqual(stamp, "hcu_mla")
+        self.assertIsNone(product)
+
 
 if __name__ == "__main__":
     unittest.main()

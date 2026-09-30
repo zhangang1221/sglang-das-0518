@@ -382,8 +382,11 @@ class DraftBackendFactory:
             HCUMLAMultiStepDraftBackend,
         )
 
-        return HCUMLAMultiStepDraftBackend(
-            self.draft_model_runner, self.topk, self.speculative_num_steps
+        return (
+            "hcu_mla",
+            HCUMLAMultiStepDraftBackend(
+                self.draft_model_runner, self.topk, self.speculative_num_steps
+            ),
         )
 
     def _create_trtllm_mha_decode_backend(self):
@@ -616,7 +619,7 @@ class DraftBackendFactory:
         logger.warning(
             "flashmla prefill backend is not yet supported for draft extend."
         )
-        return None
+        return ("hcu_mla", None)
 
     def _create_dsv4_prefill_backend(self):
         # On NPU the "dsv4" backend resolves to the Ascend V4 subclass; its
